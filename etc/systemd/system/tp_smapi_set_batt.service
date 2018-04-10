@@ -1,0 +1,10 @@
+[Unit]
+Description=Set Battery Charge Thresholds by tp_smapi
+
+[Service]
+Type=oneshot
+ExecStart=/home/mili/script/set_batt.sh
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
