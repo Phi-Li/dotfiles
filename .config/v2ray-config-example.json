@@ -1,4 +1,5 @@
 {
+    // ## LogObject
     "log": {
         // By default, V2Ray writes access log to stdout.
         "access": "/path/to/access/log/file",
@@ -7,6 +8,7 @@
         // Log level, one of "debug", "info", "warning", "error", "none"
         "loglevel": "warning"
     },
+    // ## InboundObject
     // List of inbound proxy configurations.
     "inbounds": [
         {
@@ -25,6 +27,7 @@
                 "ip": "127.0.0.1"
             },
             "streamSettings": {},
+            // ### SniffingObject
             // Enable sniffing on TCP connection.
             "sniffing": {
                 "enabled": true,
@@ -34,13 +37,119 @@
                     "tls"
                 ]
             },
+            // ### AllocateObject
             "allocate": {
                 "strategy": "always",
                 "refresh": 5,
                 "concurrency": 3
             }
+        },
+        {
+            "protocol": "vmess",
+            // ## InboundConfigurationObject
+            "settings": {
+                // ### ClientObject
+                "clients": [
+                    {
+                        "id": "27848739-7e62-4138-9fd3-098a63964b6b",
+                        "level": 0,
+                        "alterId": 4,
+                        "email": "love@v2ray.com"
+                    }
+                ],
+                // ### DetourObject
+                "detour": {
+                    "to": "tag_to_detour"
+                },
+                // ### DefaultObject
+                "default": {
+                    "level": 0,
+                    "alterId": 4
+                },
+                "disableInsecureEncryption": false
+            },
+            // ## StreamSettingsObject
+            "streamSettings": {
+                "network": "tcp",
+                "security": "tls",
+                // ### TLSObject
+                "tlsSettings": {
+                    "serverName": "vv.aoitori.moe",
+                    "alpn": [
+                        "http/2"
+                    ],
+                    "allowInsecure": false,
+                    "allowInsecureCiphers": false,
+                    "disableSystemRoot": false,
+                    // ### CertificateObject
+                    "certificates": [
+                        {
+                            "usage": "encipherment",
+                            "certificateFile": "/path/to/certificate.crt",
+                            "keyFile": "/path/to/key.key",
+                            "certificate": [
+                                "-----BEGIN CERTIFICATE-----",
+                                "-----END CERTIFICATE-----"
+                            ],
+                            "key": [
+                                "-----BEGIN RSA PRIVATE KEY-----",
+                                "-----END RSA PRIVATE KEY-----"
+                            ]
+                        }
+                    ]
+                },
+                // ## TcpObject
+                "tcpSettings": {
+                    "header": {
+                        "type": "none"
+                    }
+                },
+                "kcpSettings": {},
+                "wsSettings": {},
+                "httpSettings": {},
+                "dsSettings": {},
+                "quicSettings": {},
+                // ### SockoptObject
+                "sockopt": {
+                    "mark": 0,
+                    "tcpFastOpen": false,
+                    "tproxy": "off"
+                }
+            }
+        },
+        {
+            "protocol": "vmess",
+            "streamSettings": {
+                "network": "kcp",
+                "security": "none",
+                "tlsSettings": {},
+                "tcpSettings": {},
+                "kcpSettings": {
+                    "mtu": 1350,
+                    "tti": 20,
+                    "uplinkCapacity": 5,
+                    "downlinkCapacity": 20,
+                    "congestion": false,
+                    "readBufferSize": 1,
+                    "writeBufferSize": 1,
+                    // ### HeaderObject
+                    "header": {
+                        "type": "wechat-video"
+                    }
+                },
+                "wsSettings": {},
+                "httpSettings": {},
+                "dsSettings": {},
+                "quicSettings": {},
+                "sockopt": {
+                    "mark": 0,
+                    "tcpFastOpen": false,
+                    "tproxy": "off"
+                }
+            }
         }
     ],
+    // ## OutboundObject
     // List of outbound proxy configurations.
     "outbounds": [
         {
@@ -49,6 +158,7 @@
             "settings": {},
             "tag": "标识",
             "streamSettings": {},
+            // ### ProxySettingsObject
             "proxySettings": {
                 "tag": "another-outbound-tag"
             },
@@ -71,9 +181,23 @@
             "tag": "blocked"
         }
     ],
-    // Transport is for global transport settings. If you have multiple transports with same settings
-    // (say mKCP), you may put it here, instead of in each individual inbound/outbounds.
-    "transport": {},
+    // ## PolicyObject
+    // Policy controls some internal behavior of how V2Ray handles connections.
+    // It may be on connection level by user levels in 'levels', or global settings in 'system.'
+    "policy": {
+        // Connection policys by user levels
+        "levels": {
+            "0": {
+                "uplinkOnly": 0,
+                "downlinkOnly": 0
+            }
+        },
+        "system": {
+            "statsInboundUplink": false,
+            "statsInboundDownlink": false
+        }
+    },
+    // ## RoutingObject
     // Routing controls how traffic from inbounds are sent to outbounds.
     "routing": {
         "domainStrategy": "IPOnDemand",
@@ -136,6 +260,7 @@
             }
         ]
     },
+    // ## DnsObject
     // Dns settings for domain resolution.
     "dns": {
         // Static hosts, similar to hosts file.
@@ -173,32 +298,24 @@
         "clientIp": "1.2.3.4",
         "tag": "dns_inbound"
     },
-    // Policy controls some internal behavior of how V2Ray handles connections.
-    // It may be on connection level by user levels in 'levels', or global settings in 'system.'
-    "policy": {
-        // Connection policys by user levels
-        "levels": {
-            "0": {
-                "uplinkOnly": 0,
-                "downlinkOnly": 0
-            }
-        },
-        "system": {
-            "statsInboundUplink": false,
-            "statsInboundDownlink": false
-        }
+    // ## ApiObject
+    // Api enables gRPC APIs for external programs to communicate with V2Ray instance.
+    "api": {
+        "tag": "api",
+        "services": [
+            "HandlerService",
+            "LoggerService",
+            "StatsService"
+        ]
     },
+    // ## StatsObject
     // Stats enables internal stats counter.
     // This setting can be used together with Policy and Api.
-    //"stats":{},
-    // Api enables gRPC APIs for external programs to communicate with V2Ray instance.
-    //"api": {
-        //"tag": "api",
-        //"services": [
-        //  "HandlerService",
-        //  "LoggerService",
-        //  "StatsService"
-        //]
-    //},
-    "reverse": {}
+    "stats": {},
+    // ## ReverseObject
+    "reverse": {},
+    // Transport is for global transport settings. If you have multiple transports with same settings
+    // (say mKCP), you may put it here, instead of in each individual inbound/outbounds.
+    // ## TransportObject
+    "transport": {}
 }
