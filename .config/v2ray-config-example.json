@@ -1,3 +1,6 @@
+// Config file of V2Ray. This file follows standard JSON format, with comments support.
+// Uncomment entries below to satisfy your needs. Also read our manual for more detail at
+// https://www.v2ray.com/
 {
     // ## LogObject
     "log": {
@@ -20,12 +23,14 @@
             "protocol": "socks",
             // Tag of the inbound proxy. May be used for routing.
             "tag": "socks-inbound",
+            // ### InboundConfigurationObject
             // Settings of the protocol. Varies based on protocol.
             "settings": {
                 "auth": "noauth",
                 "udp": false,
                 "ip": "127.0.0.1"
             },
+            // ### StreamSettingsObject
             "streamSettings": {},
             // ### SniffingObject
             // Enable sniffing on TCP connection.
@@ -45,15 +50,16 @@
             }
         },
         {
+            "port": 41592,
             "protocol": "vmess",
             // ## InboundConfigurationObject
             "settings": {
                 // ### ClientObject
                 "clients": [
                     {
-                        "id": "27848739-7e62-4138-9fd3-098a63964b6b",
+                        "id": "23ad6b10-8d1a-40f7-8ad0-e3e35cd38297",
                         "level": 0,
-                        "alterId": 4,
+                        "alterId": 64,
                         "email": "love@v2ray.com"
                     }
                 ],
@@ -74,9 +80,9 @@
                 "security": "tls",
                 // ### TLSObject
                 "tlsSettings": {
-                    "serverName": "vv.aoitori.moe",
+                    "serverName": "v2ray.com",
                     "alpn": [
-                        "http/2"
+                        "http/1.1"
                     ],
                     "allowInsecure": false,
                     "allowInsecureCiphers": false,
@@ -113,13 +119,23 @@
                 // ### SockoptObject
                 "sockopt": {
                     "mark": 0,
-                    "tcpFastOpen": false,
+                    "tcpFastOpen": true,
                     "tproxy": "off"
                 }
             }
         },
         {
+            "port": 41593,
             "protocol": "vmess",
+            "settings": {
+                "clients": [
+                    {
+                        "id": "23ad6b10-8d1a-40f7-8ad0-e3e35cd38297",
+                        "level": 0,
+                        "alterId": 64
+                    }
+                ]
+            },
             "streamSettings": {
                 "network": "tcp",
                 "security": "none",
@@ -160,15 +176,15 @@
                             "reason": "OK",
                             "headers": {
                                 "Content-Type": [
-                                    "text/html",
-                                    "text/css",
-                                    "text/javascript",
-                                    "text/plain",
                                     "application/octet-stream",
-                                    "audio/mpeg",
+                                    "application/pdf",
+                                    "application/zip",
+                                    "application/x-rar-compressed",
+                                    "application/vnd.mspowerpoint",
                                     "video/mpeg",
-                                    "video/mp2t",
-                                    "application/x-shockwave-flash"
+                                    "video/mp4",
+                                    "video/webm",
+                                    "video/ogg"
                                 ],
                                 "Transfer-Encoding": [
                                     "chunked"
@@ -188,13 +204,23 @@
                 "quicSettings": {},
                 "sockopt": {
                     "mark": 0,
-                    "tcpFastOpen": false,
+                    "tcpFastOpen": true,
                     "tproxy": "off"
                 }
             }
         },
         {
+            "port": 41594,
             "protocol": "vmess",
+            "settings": {
+                "clients": [
+                    {
+                        "id": "23ad6b10-8d1a-40f7-8ad0-e3e35cd38297",
+                        "level": 0,
+                        "alterId": 64
+                    }
+                ]
+            },
             "streamSettings": {
                 "network": "kcp",
                 "security": "none",
@@ -203,14 +229,14 @@
                 "kcpSettings": {
                     "mtu": 1350,
                     "tti": 20,
-                    "uplinkCapacity": 5,
-                    "downlinkCapacity": 20,
-                    "congestion": false,
-                    "readBufferSize": 1,
-                    "writeBufferSize": 1,
+                    "uplinkCapacity": 20,
+                    "downlinkCapacity": 100,
+                    "congestion": true,
+                    "readBufferSize": 8,
+                    "writeBufferSize": 8,
                     // ### HeaderObject
                     "header": {
-                        "type": "wechat-video"
+                        "type": "utp"
                     }
                 },
                 "wsSettings": {},
@@ -219,7 +245,7 @@
                 "quicSettings": {},
                 "sockopt": {
                     "mark": 0,
-                    "tcpFastOpen": false,
+                    "tcpFastOpen": true,
                     "tproxy": "off"
                 }
             }
@@ -230,54 +256,81 @@
     "outbounds": [
         {
             "sendThrough": "0.0.0.0",
-            "protocol": "协议名称",
-            "settings": {},
-            "tag": "标识",
-            "streamSettings": {},
-            // ### ProxySettingsObject
-            "proxySettings": {
-                "tag": "another-outbound-tag"
-            },
-            "mux": {
-                "enabled": false,
-                "concurrency": 8
-            }
-        },
-        {
             // Protocol name of the outbound proxy.
             "protocol": "freedom",
             // Settings of the protocol. Varies based on protocol.
             "settings": {},
             // Tag of the outbound. May be used for routing.
             "tag": "direct"
+            // ### ProxySettingsObject
+            // "proxySettings": {
+            //     "tag": "another-outbound-tag"
+            // },
         },
         {
             "protocol": "blackhole",
             "settings": {},
             "tag": "blocked"
+        },
+        {
+            "sendThrough": "0.0.0.0",
+            "protocol": "vmess",
+            "settings": {
+                "vnext": [
+                    // ### ServerObject
+                    {
+                        "address": "127.0.0.1",
+                        "port": 37192,
+                        "users": [
+                            // ### UserObject
+                            {
+                                "id": "27848739-7e62-4138-9fd3-098a63964b6b",
+                                "alterId": 4,
+                                "level": 0,
+                                "security": "auto"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "tag": "",
+            "streamSettings": {},
+            // ### ProxySettingsObject
+            // "proxySettings": {
+            //   "tag": "another-outbound-tag"
+            // },
+            "mux": {
+                "enabled": false,
+                "concurrency": 8
+            }
         }
     ],
-    // ## PolicyObject
-    // Policy controls some internal behavior of how V2Ray handles connections.
-    // It may be on connection level by user levels in 'levels', or global settings in 'system.'
-    "policy": {
-        // Connection policys by user levels
-        "levels": {
-            "0": {
-                "uplinkOnly": 0,
-                "downlinkOnly": 0
-            }
-        },
-        "system": {
-            "statsInboundUplink": false,
-            "statsInboundDownlink": false
-        }
-    },
+    // ## TransportObject
+    // Transport is for global transport settings. If you have multiple transports with same settings
+    // (say mKCP), you may put it here, instead of in each individual inbound/outbounds.
+    //"transport": {},
     // ## RoutingObject
     // Routing controls how traffic from inbounds are sent to outbounds.
     "routing": {
         "domainStrategy": "IPOnDemand",
+        // ### RuleObject
         "rules": [
+            {
+                // Blocks access to private IPs. Remove this if you want to access your router.
+                "type": "field",
+                "ip": [
+                    "geoip:private"
+                ],
+                "outboundTag": "blocked"
+            },
+            {
+                // Blocks major ads.
+                "type": "field",
+                "domain": [
+                    "geosite:category-ads"
+                ],
+                "outboundTag": "blocked"
+            },
             {
                 "type": "field",
                 "domain": [
@@ -311,24 +364,9 @@
                 "attrs": "attrs[':method'] == 'GET'",
                 "outboundTag": "direct",
                 "balancerTag": "balancer"
-            },
-            {
-                // Blocks access to private IPs. Remove this if you want to access your router.
-                "type": "field",
-                "ip": [
-                    "geoip:private"
-                ],
-                "outboundTag": "blocked"
-            },
-            {
-                // Blocks major ads.
-                "type": "field",
-                "domain": [
-                    "geosite:category-ads"
-                ],
-                "outboundTag": "blocked"
             }
         ],
+        // ### BalancerObject
         "balancers": [
             {
                 "tag": "balancer",
@@ -374,24 +412,45 @@
         "clientIp": "1.2.3.4",
         "tag": "dns_inbound"
     },
-    // ## ApiObject
-    // Api enables gRPC APIs for external programs to communicate with V2Ray instance.
-    "api": {
-        "tag": "api",
-        "services": [
-            "HandlerService",
-            "LoggerService",
-            "StatsService"
-        ]
+    // Policy controls some internal behavior of how V2Ray handles connections.
+    // It may be on connection level by user levels in 'levels', or global settings in 'system.'
+    "policy": {
+        // Connection policys by user levels
+        "levels": {
+            // ### LevelPolicyObject
+            "0": {
+                "handshake": 4,
+                "connIdle": 300,
+                // ### 在 HTTP 浏览的场景中，可以将uplinkOnly和downlinkOnly设为0，以提高连接关闭的效率。
+                "uplinkOnly": 0,
+                "downlinkOnly": 0,
+                "statsUserUplink": false,
+                "statsUserDownlink": false,
+                "bufferSize": 10240
+            }
+        },
+        // ### SystemPolicyObject
+        "system": {
+            "statsInboundUplink": true,
+            "statsInboundDownlink": true
+        }
     },
     // ## StatsObject
     // Stats enables internal stats counter.
-    // This setting can be used together with Policy and Api.
+    // This setting can be used together with Policy and Api. 
     "stats": {},
+    // ## ApiObject
+    // Api enables gRPC APIs for external programs to communicate with V2Ray instance.
+    //"api": {
+    //"tag": "api",
+    //"services": [
+    //  "HandlerService",
+    //  "LoggerService",
+    //  "StatsService"
+    //]
+    //},
     // ## ReverseObject
     "reverse": {},
-    // Transport is for global transport settings. If you have multiple transports with same settings
-    // (say mKCP), you may put it here, instead of in each individual inbound/outbounds.
-    // ## TransportObject
-    "transport": {}
+    // You may add other entries to the configuration, but they will not be recognized by V2Ray.
+    "other": {}
 }
