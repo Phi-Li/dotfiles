@@ -50,7 +50,7 @@
             }
         },
         {
-            "port": 41592,
+            "port": 10000,
             "protocol": "vmess",
             // ## InboundConfigurationObject
             "settings": {
@@ -72,7 +72,7 @@
                     "level": 0,
                     "alterId": 4
                 },
-                "disableInsecureEncryption": false
+                "disableInsecureEncryption": true
             },
             // ## StreamSettingsObject
             "streamSettings": {
@@ -125,7 +125,7 @@
             }
         },
         {
-            "port": 41593,
+            "port": 10000,
             "protocol": "vmess",
             "settings": {
                 "clients": [
@@ -210,7 +210,7 @@
             }
         },
         {
-            "port": 41594,
+            "port": 10000,
             "protocol": "vmess",
             "settings": {
                 "clients": [
