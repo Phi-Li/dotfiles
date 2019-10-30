@@ -74,3 +74,70 @@ In response to a request with URI equal to this string, but without the trailing
     }
 
 The “`@`” prefix defines a __named location__. Such a location is not used for a regular request processing, but instead used for request redirection. They cannot be nested, and cannot contain nested locations.
+
+### `ngx_http_proxy_module`
+
+|     |     |
+| --- | --- |
+| Syntax: | `proxy_pass URL;` |
+| Default: | — |
+| Context: | `location`, `if in location`, `limit_except` |
+
+Sets the _protocol_ and _address_ of a proxied server and an optional _URI_ to which a _location_ should be mapped. As a protocol, “`http`” or “`https`” can be specified. The address can be specified as a _domain name_ or _IP address_, and an optional _port_:
+
+    proxy_pass http://localhost:8000/uri/;
+
+or as a _UNIX-domain socket path_ specified after the word “`unix`” and enclosed in colons:
+
+    proxy_pass http://unix:/tmp/backend.socket:/uri/;
+
+If a domain name resolves to several addresses, all of them will be used in a __round-robin__ fashion. In addition, an address can be specified as a [server group](http://nginx.org/en/docs/http/ngx_http_upstream_module.html).
+
+Parameter value can contain variables. In this case, if an address is specified as a _domain name_, the name is searched among the described server groups, and, if not found, is determined using a [resolver](http://nginx.org/en/docs/http/ngx_http_core_module.html#resolver).
+
+A request URI is passed to the server as follows:
+
+- If the `proxy_pass` directive is specified with a _URI_, then when a request is passed to the server, the part of a [normalized](http://nginx.org/en/docs/http/ngx_http_core_module.html#location) request URI matching the location is replaced by a URI specified in the directive:
+
+        location /name/ {
+            proxy_pass http://127.0.0.1/remote/;
+        }
+
+        /name/ => http://127.0.0.1/remote/
+
+- If `proxy_pass` is specified without a URI, the request URI is passed to the server in the __same__ form as sent by a client when the original request is processed, or the __full__ normalized request URI is passed when processing the changed URI:
+
+        location /some/path/ {
+            proxy_pass http://127.0.0.1;
+        }
+
+        /some/path/ => http://127.0.0.1/some/path/
+
+In some cases, the part of a request URI to be replaced __cannot__ be determined:
+
+- When location is specified using a _regular expression_, and also inside _named locations_.
+
+    In these cases, `proxy_pass` should be specified __without__ a _URI_.
+
+- When the URI is changed inside a _proxied location_ using the [`rewrite`](http://nginx.org/en/docs/http/ngx_http_rewrite_module.html#rewrite) directive, and this __same__ configuration will be used to process a request (`break`):
+
+        location /name/ {
+            rewrite    /name/([^/]+) /users?name=$1 break;
+            proxy_pass http://127.0.0.1;
+        }
+
+        /name/([^/]+) => http://127.0.0.1/users?name=$1
+
+    In this case, the URI specified in the directive is __ignored__ and the __full__ changed request URI is passed to the server.
+
+- When variables are used in `proxy_pass`:
+
+        location /name/ {
+            proxy_pass http://127.0.0.1$request_uri;
+        }
+
+        /name/ => http://127.0.0.1$request_uri
+
+    In this case, if URI is specified in the directive, it is passed to the server __as is__, replacing the original request URI.
+
+[WebSocket](http://nginx.org/en/docs/http/websocket.html) proxying requires special configuration and is supported since version 1.3.13.
