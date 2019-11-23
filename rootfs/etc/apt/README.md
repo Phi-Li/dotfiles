@@ -37,6 +37,7 @@ To set up a network connection, go through the following steps:
 ### `sudo`
 
     # adduser foo sudo
+    # adduser foo -G sudo
 
 ### Shell
 
