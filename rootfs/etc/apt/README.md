@@ -31,7 +31,7 @@ To set up a network connection, go through the following steps:
 
 ### Desktop environments
 
-    # apt install kde-plasma-desktop sddm-theme-debian-breeze plasma-nm firefox krusader kompare krename zip arj unace rar unrar rpm p7zip synaptic
+    # apt install kde-plasma-desktop sddm-theme-debian-breeze plasma-nm firefox krusader kompare krename lhasa zip arj unace rar unrar rpm p7zip synaptic
     # ln -s /home/debianuser/.config .config
 
 ### `sudo`
