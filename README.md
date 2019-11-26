@@ -38,3 +38,28 @@ List of directories seperated by `:` (analogous to `PATH`)
 - `XDG_CONFIG_DIRS`
 
   - Default: `/etc/xdg`
+
+## XDG user directories
+
+https://wiki.archlinux.org/index.php/XDG_user_directories
+
+### Creating default directories
+
+    $ xdg-user-dirs-update
+    
+### Creating custom directories
+
+    ~/.config/user-dirs.dirs
+    ---
+    XDG_DESKTOP_DIR="$HOME/Desktop"
+    XDG_DOCUMENTS_DIR="$HOME/Documents"
+    XDG_DOWNLOAD_DIR="$HOME/Downloads"
+    XDG_MUSIC_DIR="$HOME/Music"
+    XDG_PICTURES_DIR="$HOME/Pictures"
+    XDG_PUBLICSHARE_DIR="$HOME/Public"
+    XDG_TEMPLATES_DIR="$HOME/Templates"
+    XDG_VIDEOS_DIR="$HOME/Videos
+
+<br>
+
+    $ xdg-user-dirs-update --set DOWNLOAD ~/Internet
