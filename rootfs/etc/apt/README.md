@@ -5,6 +5,7 @@ To set up a network connection, go through the following steps:
 - Ensure your __network interface__ is listed and enabled, for example with [`ip-link(8)`](https://jlk.fjfi.cvut.cz/arch/manpages/man/ip-link.8):
 
         # ip link
+        # ip link set eth0 up
 
 - Connect to the network. Plug in the Ethernet cable or __connect to the wireless LAN__.
 
