@@ -1,11 +1,35 @@
-deb http://deb.debian.org/debian buster main contrib non-free
-deb-src http://deb.debian.org/debian buster main contrib non-free
+#
 
-deb http://deb.debian.org/debian-security/ buster/updates main contrib non-free
-deb-src http://deb.debian.org/debian-security/ buster/updates main contrib non-free
+# deb cdrom:[Debian GNU/Linux 10.X.X _Buster_ - Official amd64 DVD Binary-1 20XXXXXX-XX:XX]/ buster contrib main
 
-deb http://deb.debian.org/debian buster-updates main contrib non-free
-deb-src http://deb.debian.org/debian buster-updates main contrib non-free
+# https://wiki.debian.org/Apt
+# https://wiki.debian.org/PackageManagementTools
+# https://wiki.debian.org/SourcesList#Example_sources.list
+# https://www.debian.org/mirror/list
+# https://www.debian.org/mirror/list-full
 
-deb http://deb.debian.org/debian buster-backports main contrib non-free
-deb-src http://deb.debian.org/debian buster-backports main contrib non-free
+deb https://mirrors.ustc.edu.cn/debian unstable main contrib non-free
+# deb https://mirrors.tuna.tsinghua.edu.cn/debian unstable main contrib non-free
+# deb http://deb.debian.org/debian buster main contrib non-free
+# deb-src http://deb.debian.org/debian buster main contrib non-free
+
+deb https://mirrors.ustc.edu.cn/debian-security/ testing-security main contrib non-free
+# deb https://mirrors.tuna.tsinghua.edu.cn/debian-security/ testing-security main contrib non-free
+# deb http://deb.debian.org/debian-security/ buster/updates main contrib non-free
+# deb-src http://deb.debian.org/debian-security/ buster/updates main contrib non-free
+
+# testing-updates
+deb https://mirrors.ustc.edu.cn/debian testing-updates main contrib non-free
+# deb https://mirrors.tuna.tsinghua.edu.cn/debian testing-updates main contrib non-free
+# deb http://deb.debian.org/debian buster-updates main contrib non-free
+# deb-src http://deb.debian.org/debian buster-updates main contrib non-free
+
+deb https://mirrors.ustc.edu.cn/debian testing-backports main contrib non-free
+# deb https://mirrors.tuna.tsinghua.edu.cn/debian testing-backports main contrib non-free
+# deb http://deb.debian.org/debian buster-backports main contrib non-free
+# deb-src http://deb.debian.org/debian buster-backports main contrib non-free
+
+# deb https://mirrors.ustc.edu.cn/debiancn unstable main
+# deb https://mirrors.ustc.edu.cn/deb-multimedia unstable main non-free
+# Debian 第三方多媒体软件源
+# deb https://mirrors.tuna.tsinghua.edu.cn/debian-multimedia unstable main non-free
