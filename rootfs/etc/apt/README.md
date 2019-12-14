@@ -60,5 +60,5 @@ To set up a network connection, go through the following steps:
 
 ### Shell
 
-    $ sudo apt install git zsh zsh-syntax-highlighting tilda yakuake rxvt-unicode
+    $ sudo apt install git zsh zsh-syntax-highlighting zsh-theme-powerlevel9k tilda yakuake rxvt-unicode
     $ sh -c "$(wget https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh -O -)"
