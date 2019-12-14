@@ -49,8 +49,14 @@ To set up a network connection, go through the following steps:
 
 ### `sudo`
 
+    # sudo -lU user
+    # usermod -aG sudo username
+    # gpasswd -a user group
+    # # Tip: The adduser script allows carrying out the jobs of useradd, chfn and passwd interactively.
     # adduser foo sudo
     # adduser foo -G sudo
+    # members sudo
+    # EDITOR=vim visudo
 
 ### Shell
 
