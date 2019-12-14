@@ -24,6 +24,13 @@ To set up a network connection, go through the following steps:
 
         # ping debian.org
 
+### Time
+
+    # timedatectl list-timezones
+    # timedatectl set-timezone Asia/Shanghai
+    # timedatectl set-local-rtc 0
+    # hwclock --systohc
+
 ### Select the mirrors
 
     /etc/apt/sources.list
