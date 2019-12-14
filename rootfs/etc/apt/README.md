@@ -16,6 +16,11 @@ To set up a network connection, go through the following steps:
 - Configure your network connection:
 
     - __Static IP address__
+    
+        A static IP address can be configured with most standard network managers and also [dhcpcd](https://wiki.archlinux.org/index.php/Dhcpcd).
+
+        To manually configure a static IP address, add an IP address as described in #IP addresses, set up your routing table and [configure your DNS servers](https://wiki.archlinux.org/index.php/Domain_name_resolution).
+
     - Dynamic IP address: use __DHCP__.
 
         > Note: The installation image enables __`dhcpcd`__ (`dhcpcd@interface.service`) for __wired network devices__ on boot.
