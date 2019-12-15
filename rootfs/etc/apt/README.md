@@ -44,8 +44,47 @@ To set up a network connection, go through the following steps:
 
 ### Desktop environments
 
+__KDE:__
+
+<https://wiki.debian.org/KDE#Installation>
+
     # apt install kde-plasma-desktop sddm-theme-debian-breeze plasma-nm firefox krusader kompare krename lhasa zip arj unace rar unrar rpm p7zip synaptic
     # ln -s /home/debianuser/.config .config
+
+__Xfce:__
+
+<https://docs.xfce.org/#core_modules>
+
+- [Application Finder (`xfce4-appfinder`)](https://docs.xfce.org/xfce/xfce4-appfinder/start) – Application to quickly run applications and commands
+- [Configuration Storage System (`xfconf`)](https://docs.xfce.org/xfce/xfconf/start) – D-Bus-based configuration storage system
+- [Desktop Manager (`xfdesktop`)](https://docs.xfce.org/xfce/xfdesktop/start) – Configure the desktop background image, icons, launchers and folders
+- [Helper Applications (`exo`)](https://docs.xfce.org/xfce/exo/start) – Manage preferred applications and edit .desktop files
+- [File Manager (`thunar`)](https://docs.xfce.org/xfce/thunar/start) – The fast and easy to use file manager for the Xfce Desktop
+- [Panel (`xfce4-panel`)](https://docs.xfce.org/xfce/xfce4-panel/start) – Application launchers, window buttons, applications menu, workspace switcher and more
+- [Power Manager (`xfce4-power-manager`)](https://docs.xfce.org/xfce/xfce4-power-manager/start) – Manage power sources and power consumption of devices
+- [Session Manager (`xfce4-session`)](https://docs.xfce.org/xfce/xfce4-session/start) – Save the state of your desktop and restore it on the next startup
+- [Settings Manager (`xfce4-settings`)](https://docs.xfce.org/xfce/xfce4-settings/start) – The Settings daemon which persists many Xfce settings
+- [Window Manager (`xfwm4`)](https://docs.xfce.org/xfce/xfwm4/start) – Handles the placement of windows on the screen
+
+<br>
+
+    # apt install lightdm arctica-greeter arctica-greeter-guest-session arctica-greeter-remote-logon arctica-greeter-theme-debian light-locker lightdm-remote-session-freerdp2 lightdm-remote-session-x2go lightdm-settings
+    # apt install xfce4-appfinder
+    # apt install xfconf
+    # apt install xfdesktop4
+    # apt install exo-utils
+    # apt install thunar thunar-archive-plugin xarchiver thunar-gtkhash thunar-media-tags-plugin thunar-vcs-plugin thunar-volman
+    # apt install xfce4-panel xfce4-appmenu-plugin xfec4-clipman xfce4-clipman-plugin xfce4-cpufreq-plugin xfce4-cpugraph-plugin xfce4-datetime-plugin xfce4-diskperf-plugin xfce4-fsguard-plugin xfce4-genmon-plugin xfce4-indicator-plugin xfce4-mount-plugin xfce4-netload-plugin xfce4-places-plugin xfce4-power-manager-data xfce4-pulseaudio-plugin xfce4-screenshooter xfce4-sensors-plugin xfce4-statusnotifier-plugin xfce4-systemload-plugin xfce4-verve-plugi xfce4-whiskermenu-pluginn
+    # apt install xfce4-power-manager
+    # apt install xfce4-session
+    # apt install xfce4-settings
+    # apt install xfwm4 xfwm4-theme-breeze shiki-colors-xfwm-theme
+    # apt install mousepad ristretto xfce4-notifyd xfce4-taskmanager xfce4-terminal xfce4-screensaver
+
+<https://github.com/search?q=xfce&type=Repositories&s=stars&o=desc>
+
+    # apt install breeze-cursor-theme breeze-gtk-theme breeze-icon-theme xfwm4-theme-breeze
+    # apt install arc-theme elementary-xfce-icon-theme shiki-colors-xfwm-theme numix-gtk-theme numix-icon-theme numix-icon-theme-circle materia-gtk-theme
 
 ### `sudo`
 
