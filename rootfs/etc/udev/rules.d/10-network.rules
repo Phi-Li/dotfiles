@@ -1,0 +1,2 @@
+SUBSYSTEM=="net", ACTION=="add", ATTRS{idVendor}=="0cf3", ATTRS{idProduct}=="9271", NAME="ar9271"
+SUBSYSTEM=="net", ACTION=="add", ATTRS{idVendor}=="0bda", ATTRS{idProduct}=="8812", NAME="rtl8812au"
