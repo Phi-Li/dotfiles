@@ -68,7 +68,7 @@ __Xfce:__
 
 <br>
 
-    # apt install lightdm arctica-greeter arctica-greeter-guest-session arctica-greeter-remote-logon arctica-greeter-theme-debian light-locker lightdm-remote-session-freerdp2 lightdm-remote-session-x2go lightdm-settings
+    # apt install lightdm arctica-greeter arctica-greeter-guest-session arctica-greeter-theme-debian light-locker lightdm-settings
     # apt install xfce4-appfinder
     # apt install xfconf
     # apt install xfdesktop4
