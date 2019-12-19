@@ -64,6 +64,55 @@ https://wiki.archlinux.org/index.php/XDG_user_directories
 
     $ xdg-user-dirs-update --set DOWNLOAD ~/Internet
 
+## Writing unit files
+
+<https://wiki.archlinux.org/index.php/systemd#Writing_unit_files>
+
+The syntax of _systemd_'s [unit files](https://www.freedesktop.org/software/systemd/man/systemd.unit.html) is inspired by XDG Desktop Entry Specification _.desktop_ files, which are in turn inspired by Microsoft Windows _.ini_ files. Unit files are loaded from multiple locations (to see the full list, run `systemctl show --property=UnitPath`), but the main ones are (listed from lowest to highest precedence):
+
+- `/usr/lib/systemd/system/`: units provided by installed packages
+- `/etc/systemd/system/`: units installed by the system administrator
+
+## systemd.unit — Unit configuration
+
+<https://www.freedesktop.org/software/systemd/man/systemd.unit.html>
+
+### Unit File Load Path
+
+__Table 1.  Load path when running in system mode (`--system`).__
+
+| Path |	Description |
+| --- | --- |
+| `/etc/systemd/system.control` |	Persistent and transient configuration created using the dbus API |
+| `/run/systemd/system.control` |	(Same as above) |
+| `/run/systemd/transient` |	Dynamic configuration for transient units |
+| `/run/systemd/generator.early` |	Generated units with high priority (see `early-dir` in [systemd.generator(7)](https://www.freedesktop.org/software/systemd/man/systemd.generator.html)) |
+| `/etc/systemd/system` |	System units created by the administrator |
+| `/run/systemd/system` |	Runtime units |
+| `/run/systemd/generator` |	Generated units with medium priority (see `normal-dir` in [systemd.generator(7)](https://www.freedesktop.org/software/systemd/man/systemd.generator.html)) |
+| `/usr/local/lib/systemd/system` |	System units installed by the administrator |
+| `/usr/lib/systemd/system` |	System units installed by the distribution package manager |
+| `/run/systemd/generator.late` |	Generated units with low priority (see `late-dir` in [systemd.generator(7)](https://www.freedesktop.org/software/systemd/man/systemd.generator.html)) |
+
+__Table 2.  Load path when running in user mode (`--user`).__
+
+| Path |	Description |
+| --- | --- |
+| `$XDG_CONFIG_HOME/systemd/user.control` or `~/.config/systemd/user.control` |	Persistent and transient configuration created using the dbus API (`$XDG_CONFIG_HOME` is used if set, `~/.config` otherwise) |
+| `$XDG_RUNTIME_DIR/systemd/user.control` |	(Same as above) |
+| `/run/systemd/transient` |	Dynamic configuration for transient units |
+| `/run/systemd/generator.early` |	Generated units with high priority (see `early-dir` in [systemd.generator(7)](https://www.freedesktop.org/software/systemd/man/systemd.generator.html)) |
+| `$XDG_CONFIG_HOME/systemd/user` or `$HOME/.config/systemd/user` |	User configuration (`$XDG_CONFIG_HOME` is used if set, `~/.config` otherwise) |
+| `/etc/systemd/user` |	User units created by the administrator |
+| `$XDG_RUNTIME_DIR/systemd/user` |	Runtime units (only used when `$XDG_RUNTIME_DIR` is set) |
+| `/run/systemd/user` |	Runtime units |
+| `$XDG_RUNTIME_DIR/systemd/generator` |	Generated units with medium priority (see `normal-dir` in [systemd.generator(7)](https://www.freedesktop.org/software/systemd/man/systemd.generator.html)) |
+| `$XDG_DATA_HOME/systemd/user` or `$HOME/.local/share/systemd/user` |	Units of packages that have been installed in the home directory (`$XDG_DATA_HOME` is used if set, `~/.local/share` otherwise) |
+| `$dir/systemd/user` for each `$dir` in `$XDG_DATA_DIRS` |	Additional locations for installed user units, one for each entry in `$XDG_DATA_DIRS` |
+| `/usr/local/lib/systemd/user` |	User units installed by the administrator |
+| `/usr/lib/systemd/user` |	User units installed by the distribution package manager |
+| `$XDG_RUNTIME_DIR/systemd/generator.late` |	Generated units with low priority (see `late-dir` in [systemd.generator(7)](https://www.freedesktop.org/software/systemd/man/systemd.generator.html)) |
+
 ## [Zsh Startup/Shutdown files](https://wiki.archlinux.org/index.php/Zsh#Startup/Shutdown_files)
 
 > __Tip:__
