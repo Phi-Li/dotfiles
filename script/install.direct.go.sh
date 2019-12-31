@@ -9,23 +9,25 @@
 # 2: Application error
 # 3: Network error
 
-CUR_VER=""
-NEW_VER=""
+CURRENT_VERSION=""
+NEW_VERSION=""
 ARCH=""
-VDIS="64"
-ZIPFILE="/tmp/v2ray/v2ray.zip"
+V2RAY_DISTRIBUTION="64"
 V2RAY_RUNNING=0
-VSRC_ROOT="/tmp/v2ray"
+V2RAY_SRC_ROOT="/tmp/v2ray"
+ZIPFILE="${V2RAY_SRC_ROOT}/v2ray-linux-${V2RAY_DISTRIBUTION}.zip"
 EXTRACT_ONLY=0
 ERROR_IF_UPTODATE=0
-DIST_SRC="github"
+DISTRIBUTION_SRC="jsdelivr"
 
 CMD_INSTALL=""
 CMD_UPDATE=""
 SOFTWARE_UPDATED=0
 
 SYSTEMCTL_CMD=$(command -v systemctl 2>/dev/null)
+echo "SYSTEMCTL_CMD=${SYSTEMCTL_CMD}"
 SERVICE_CMD=$(command -v service 2>/dev/null)
+echo "SERVICE_CMD=${SERVICE_CMD}"
 
 CHECK=""
 FORCE=""
@@ -63,7 +65,7 @@ while [[ $# > 0 ]];do
         shift
         ;;
         --extract)
-        VSRC_ROOT="$2"
+        V2RAY_SRC_ROOT="$2"
         shift
         ;;
         --extractonly)
@@ -75,7 +77,7 @@ while [[ $# > 0 ]];do
         shift
         ;;
         --source)
-        DIST_SRC="$2"
+        DISTRIBUTION_SRC="$2"
         shift
         ;;
         --errifuptodate)
@@ -96,26 +98,27 @@ colorEcho(){
 
 sysArch(){
     ARCH=$(uname -m)
+    echo "ARCH=${ARCH}"
     if [[ "$ARCH" == "i686" ]] || [[ "$ARCH" == "i386" ]]; then
-        VDIS="32"
+        V2RAY_DISTRIBUTION="32"
     elif [[ "$ARCH" == *"armv7"* ]] || [[ "$ARCH" == "armv6l" ]]; then
-        VDIS="arm"
+        V2RAY_DISTRIBUTION="arm"
     elif [[ "$ARCH" == *"armv8"* ]] || [[ "$ARCH" == "aarch64" ]]; then
-        VDIS="arm64"
+        V2RAY_DISTRIBUTION="arm64"
     elif [[ "$ARCH" == *"mips64le"* ]]; then
-        VDIS="mips64le"
+        V2RAY_DISTRIBUTION="mips64le"
     elif [[ "$ARCH" == *"mips64"* ]]; then
-        VDIS="mips64"
+        V2RAY_DISTRIBUTION="mips64"
     elif [[ "$ARCH" == *"mipsle"* ]]; then
-        VDIS="mipsle"
+        V2RAY_DISTRIBUTION="mipsle"
     elif [[ "$ARCH" == *"mips"* ]]; then
-        VDIS="mips"
+        V2RAY_DISTRIBUTION="mips"
     elif [[ "$ARCH" == *"s390x"* ]]; then
-        VDIS="s390x"
+        V2RAY_DISTRIBUTION="s390x"
     elif [[ "$ARCH" == "ppc64le" ]]; then
-        VDIS="ppc64le"
+        V2RAY_DISTRIBUTION="ppc64le"
     elif [[ "$ARCH" == "ppc64" ]]; then
-        VDIS="ppc64"
+        V2RAY_DISTRIBUTION="ppc64"
     fi
     return 0
 }
@@ -123,13 +126,13 @@ sysArch(){
 downloadV2Ray(){
     rm -rf /tmp/v2ray
     mkdir -p /tmp/v2ray
-    if [[ "${DIST_SRC}" == "jsdelivr" ]]; then
-        DOWNLOAD_LINK="https://cdn.jsdelivr.net/gh/v2ray/dist/v2ray-linux-${VDIS}.zip"
+    if [[ "${DISTRIBUTION_SRC}" == "jsdelivr" ]]; then
+        DOWNLOAD_LINK="https://cdn.jsdelivr.net/gh/v2ray/dist/v2ray-linux-${V2RAY_DISTRIBUTION}.zip"
     else
-        DOWNLOAD_LINK="https://github.com/v2ray/v2ray-core/releases/download/${NEW_VER}/v2ray-linux-${VDIS}.zip"
+        DOWNLOAD_LINK="https://github.com/v2ray/v2ray-core/releases/download/${NEW_VERSION}/v2ray-linux-${V2RAY_DISTRIBUTION}.zip"
     fi
     colorEcho ${BLUE} "Downloading V2Ray: ${DOWNLOAD_LINK}"
-    curl ${PROXY} -L -H "Cache-Control: no-cache" -o ${ZIPFILE} ${DOWNLOAD_LINK}
+    curl ${PROXY} -L -C - -H "Cache-Control: no-cache" -o ${ZIPFILE} ${DOWNLOAD_LINK}
     if [ $? != 0 ];then
         colorEcho ${RED} "Failed to download! Please check your network or try again."
         return 3
@@ -183,13 +186,13 @@ getPMT(){
 extract(){
     colorEcho ${BLUE}"Extracting V2Ray package to /tmp/v2ray."
     mkdir -p /tmp/v2ray
-    unzip $1 -d ${VSRC_ROOT}
+    unzip $1 -d ${V2RAY_SRC_ROOT}
     if [[ $? -ne 0 ]]; then
         colorEcho ${RED} "Failed to extract V2Ray."
         return 2
     fi
-    if [[ -d "/tmp/v2ray/v2ray-${NEW_VER}-linux-${VDIS}" ]]; then
-      VSRC_ROOT="/tmp/v2ray/v2ray-${NEW_VER}-linux-${VDIS}"
+    if [[ -d "/tmp/v2ray/v2ray-${NEW_VERSION}-linux-${V2RAY_DISTRIBUTION}" ]]; then
+      V2RAY_SRC_ROOT="/tmp/v2ray/v2ray-${NEW_VERSION}-linux-${V2RAY_DISTRIBUTION}"
     fi
     return 0
 }
@@ -198,29 +201,29 @@ extract(){
 # 1: new V2Ray. 0: no. 2: not installed. 3: check failed. 4: don't check.
 getVersion(){
     if [[ -n "$VERSION" ]]; then
-        NEW_VER="$VERSION"
-        if [[ ${NEW_VER} != v* ]]; then
-          NEW_VER=v${NEW_VER}
+        NEW_VERSION="$VERSION"
+        if [[ ${NEW_VERSION} != v* ]]; then
+          NEW_VERSION=v${NEW_VERSION}
         fi
         return 4
     else
         VER=`/usr/bin/v2ray/v2ray -version 2>/dev/null`
         RETVAL="$?"
-        CUR_VER=`echo $VER | head -n 1 | cut -d " " -f2`
-        if [[ ${CUR_VER} != v* ]]; then
-            CUR_VER=v${CUR_VER}
+        CURRENT_VERSION=`echo $VER | head -n 1 | cut -d " " -f2`
+        if [[ ${CURRENT_VERSION} != v* ]]; then
+            CURRENT_VERSION=v${CURRENT_VERSION}
         fi
         TAG_URL="https://api.github.com/repos/v2ray/v2ray-core/releases/latest"
-        NEW_VER=`curl ${PROXY} -s ${TAG_URL} --connect-timeout 10| grep 'tag_name' | cut -d\" -f4`
-        if [[ ${NEW_VER} != v* ]]; then
-          NEW_VER=v${NEW_VER}
+        NEW_VERSION=`curl ${PROXY} -s ${TAG_URL} --connect-timeout 10| grep 'tag_name' | cut -d\" -f4`
+        if [[ ${NEW_VERSION} != v* ]]; then
+          NEW_VERSION=v${NEW_VERSION}
         fi
-        if [[ $? -ne 0 ]] || [[ $NEW_VER == "" ]]; then
+        if [[ $? -ne 0 ]] || [[ $NEW_VERSION == "" ]]; then
             colorEcho ${RED} "Failed to fetch release information. Please check your network or try again."
             return 3
         elif [[ $RETVAL -ne 0 ]];then
             return 2
-        elif [[ $NEW_VER != $CUR_VER ]];then
+        elif [[ $NEW_VERSION != $CURRENT_VERSION ]];then
             return 1
         fi
         return 0
@@ -258,7 +261,7 @@ startV2ray(){
 
 copyFile() {
     NAME=$1
-    ERROR=`cp "${VSRC_ROOT}/${NAME}" "/usr/bin/v2ray/${NAME}" 2>&1`
+    ERROR=`cp "${V2RAY_SRC_ROOT}/${NAME}" "/usr/bin/v2ray/${NAME}" 2>&1`
     if [[ $? -ne 0 ]]; then
         colorEcho ${YELLOW} "${ERROR}"
         return 1
@@ -287,7 +290,7 @@ installV2Ray(){
     if [[ ! -f "/etc/v2ray/config.json" ]]; then
         mkdir -p /etc/v2ray
         mkdir -p /var/log/v2ray
-        cp "${VSRC_ROOT}/vpoint_vmess_freedom.json" "/etc/v2ray/config.json"
+        cp "${V2RAY_SRC_ROOT}/vpoint_vmess_freedom.json" "/etc/v2ray/config.json"
         if [[ $? -ne 0 ]]; then
             colorEcho ${YELLOW} "Failed to create V2Ray configuration file. Please create it manually."
             return 1
@@ -309,14 +312,14 @@ installInitScript(){
     if [[ -n "${SYSTEMCTL_CMD}" ]];then
         if [[ ! -f "/etc/systemd/system/v2ray.service" ]]; then
             if [[ ! -f "/lib/systemd/system/v2ray.service" ]]; then
-                cp "${VSRC_ROOT}/systemd/v2ray.service" "/etc/systemd/system/"
+                cp "${V2RAY_SRC_ROOT}/systemd/v2ray.service" "/etc/systemd/system/"
                 systemctl enable v2ray.service
             fi
         fi
         return
     elif [[ -n "${SERVICE_CMD}" ]] && [[ ! -f "/etc/init.d/v2ray" ]]; then
         installSoftware "daemon" || return $?
-        cp "${VSRC_ROOT}/systemv/v2ray" "/etc/init.d/v2ray"
+        cp "${V2RAY_SRC_ROOT}/systemv/v2ray" "/etc/init.d/v2ray"
         chmod +x "/etc/init.d/v2ray"
         update-rc.d v2ray defaults
     fi
@@ -389,12 +392,12 @@ checkUpdate(){
     getVersion
     RETVAL="$?"
     if [[ $RETVAL -eq 1 ]]; then
-        colorEcho ${BLUE} "Found new version ${NEW_VER} for V2Ray.(Current version:$CUR_VER)"
+        colorEcho ${BLUE} "Found new version ${NEW_VERSION} for V2Ray.(Current version:$CURRENT_VERSION)"
     elif [[ $RETVAL -eq 0 ]]; then
-        colorEcho ${BLUE} "No new version. Current version is ${NEW_VER}."
+        colorEcho ${BLUE} "No new version. Current version is ${NEW_VERSION}."
     elif [[ $RETVAL -eq 2 ]]; then
         colorEcho ${YELLOW} "No V2Ray installed."
-        colorEcho ${BLUE} "The newest version for V2Ray is ${NEW_VER}."
+        colorEcho ${BLUE} "The newest version for V2Ray is ${NEW_VERSION}."
     fi
     return 0
 }
@@ -409,20 +412,20 @@ main(){
     # extract local file
     if [[ $LOCAL_INSTALL -eq 1 ]]; then
         colorEcho ${YELLOW} "Installing V2Ray via local file. Please make sure the file is a valid V2Ray package, as we are not able to determine that."
-        NEW_VER=local
+        NEW_VERSION=local
         installSoftware unzip || return $?
         rm -rf /tmp/v2ray
         extract $LOCAL || return $?
-        #FILEVDIS=`ls /tmp/v2ray |grep v2ray-v |cut -d "-" -f4`
+        #FILEV2RAY_DISTRIBUTION=`ls /tmp/v2ray |grep v2ray-v |cut -d "-" -f4`
         #SYSTEM=`ls /tmp/v2ray |grep v2ray-v |cut -d "-" -f3`
         #if [[ ${SYSTEM} != "linux" ]]; then
         #    colorEcho ${RED} "The local V2Ray can not be installed in linux."
         #    return 1
-        #elif [[ ${FILEVDIS} != ${VDIS} ]]; then
+        #elif [[ ${FILEV2RAY_DISTRIBUTION} != ${V2RAY_DISTRIBUTION} ]]; then
         #    colorEcho ${RED} "The local V2Ray can not be installed in ${ARCH} system."
         #    return 1
         #else
-        #    NEW_VER=`ls /tmp/v2ray |grep v2ray-v |cut -d "-" -f2`
+        #    NEW_VERSION=`ls /tmp/v2ray |grep v2ray-v |cut -d "-" -f2`
         #fi
     else
         # download via network and extract
@@ -430,7 +433,7 @@ main(){
         getVersion
         RETVAL="$?"
         if [[ $RETVAL == 0 ]] && [[ "$FORCE" != "1" ]]; then
-            colorEcho ${BLUE} "Latest version ${CUR_VER} is already installed."
+            colorEcho ${BLUE} "Latest version ${CURRENT_VERSION} is already installed."
             if [[ "${ERROR_IF_UPTODATE}" == "1" ]]; then
               return 10
             fi
@@ -438,7 +441,7 @@ main(){
         elif [[ $RETVAL == 3 ]]; then
             return 3
         else
-            colorEcho ${BLUE} "Installing V2Ray ${NEW_VER} on ${ARCH}"
+            colorEcho ${BLUE} "Installing V2Ray ${NEW_VERSION} on ${ARCH}"
             downloadV2Ray || return $?
             installSoftware unzip || return $?
             extract ${ZIPFILE} || return $?
@@ -446,7 +449,7 @@ main(){
     fi 
     
     if [[ "${EXTRACT_ONLY}" == "1" ]]; then
-        colorEcho ${GREEN} "V2Ray extracted to ${VSRC_ROOT}, and exiting..."
+        colorEcho ${GREEN} "V2Ray extracted to ${V2RAY_SRC_ROOT}, and exiting..."
         return 0
     fi
 
@@ -460,7 +463,7 @@ main(){
         colorEcho ${BLUE} "Restarting V2Ray service."
         startV2ray
     fi
-    colorEcho ${GREEN} "V2Ray ${NEW_VER} is installed."
+    colorEcho ${GREEN} "V2Ray ${NEW_VERSION} is installed."
     rm -rf /tmp/v2ray
     return 0
 }
