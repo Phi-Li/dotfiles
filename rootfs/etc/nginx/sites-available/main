@@ -1,0 +1,65 @@
+server {
+	# http://nginx.org/en/docs/http/ngx_http_core_module.html#listen
+	listen 443 default_server ssl http2;
+	listen [::]:443 default_server ssl http2;
+
+	# include snippets/snakeoil.conf;
+
+	# http://nginx.org/en/docs/http/configuring_https_servers.html
+	ssl_certificate     www.example.com.crt;
+	ssl_certificate_key www.example.com.key;
+	ssl_protocols TLSv1.3;
+
+	# http://nginx.org/en/docs/http/ngx_http_gzip_module.html
+	gzip off;
+
+	root /var/www/html;
+
+	index index.html;
+
+	server_name example.com;
+
+	location / {
+		try_files $uri $uri/ =404;
+	}
+
+	location /drive/ {
+		proxy_set_header Host $host;
+		proxy_set_header X-Real-IP $remote_addr;
+
+		# https://www.nginx.com/resources/wiki/start/topics/examples/likeapache/
+		proxy_set_header X-Forwarded-Host $host:$server_port;
+		proxy_set_header X-Forwarded-Server $host;
+		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+
+		# https://www.nginx.com/resources/wiki/start/topics/examples/forwarded/
+		proxy_set_header X-Forwarded-Proto $scheme;
+
+		proxy_pass https://localhost:8443;
+	}
+
+	location = /drive {
+		proxy_set_header Host $host;
+		proxy_set_header X-Real-IP $remote_addr;
+		proxy_set_header X-Forwarded-Host $host:$server_port;
+		proxy_set_header X-Forwarded-Server $host;
+		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+		proxy_set_header X-Forwarded-Proto $scheme;
+		proxy_pass https://localhost:8443;
+	}
+
+	# https://www.nginx.com/resources/wiki/start/topics/tutorials/config_pitfalls/#proxy-everything
+	location /icons/ {
+		try_files $uri $uri/ @apache;
+	}
+
+	location @apache {
+		proxy_set_header Host $host;
+		proxy_set_header X-Real-IP $remote_addr;
+		proxy_set_header X-Forwarded-Host $host:$server_port;
+		proxy_set_header X-Forwarded-Server $host;
+		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+		proxy_set_header X-Forwarded-Proto $scheme;
+		proxy_pass https://localhost:8443;
+	}
+}

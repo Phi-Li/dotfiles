@@ -37,16 +37,12 @@
         ]
       },
       "streamSettings": {
-        "network": "kcp",
-        "kcpSettings": {
-          "tti": 20,
-          "uplinkCapacity": 20,
-          "downlinkCapacity": 100,
-          "congestion": true,
-          "readBufferSize": 8,
-          "writeBufferSize": 8,
-          "header": {
-            "type": "utp"
+        "network": "ws",
+        "security": "tls",
+        "wsSettings": {
+          "path": "/",
+          "headers": {
+            "Host": "v2ray.com"
           }
         }
       }

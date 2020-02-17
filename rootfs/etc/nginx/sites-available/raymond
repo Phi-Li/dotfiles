@@ -1,0 +1,42 @@
+# http://nginx.org/en/docs/http/configuring_https_servers.html
+
+server {
+  listen 443 ssl;
+  listen [::]:443 ssl;
+  server_name         www.example.com;
+
+  keepalive_timeout   75s;
+
+  ssl_certificate     www.example.com.crt;
+  ssl_certificate_key www.example.com.key;
+  ssl_protocols       TLSv1.3;
+  ssl_ciphers         TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLSv1.2:!aNULL:!MD5;
+
+  ssl_session_cache   shared:SSL:10m;
+  ssl_session_timeout 10m;
+  ssl_session_tickets off;
+
+	root /var/www/vroot;
+
+  location / {
+    # http://nginx.org/en/docs/http/ngx_http_core_module.html#var_http_
+    # https://developer.mozilla.org/en-US/docs/Web/HTTP/Protocol_upgrade_mechanism
+    # https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/426
+    if ($http_upgrade != "websocket") {
+        return 426 "This service requires use of the WebSocket protocol.";
+    }
+
+    # http://nginx.org/en/docs/http/websocket.html
+    proxy_pass http://127.0.0.1:1090;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+    proxy_read_timeout 60s;
+
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+
+    proxy_redirect off;
+  }
+}

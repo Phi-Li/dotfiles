@@ -12,6 +12,13 @@
         "accounts": [],
         "allowTransparent": false,
         "userLevel": 0
+      },
+      "sniffing": {
+        "enabled": true,
+        "destOverride": [
+          "http",
+          "tls"
+        ]
       }
     }
   ],
@@ -36,28 +43,24 @@
         ]
       },
       "streamSettings": {
-        "network": "tcp",
+        "network": "http",
         "security": "tls",
         "tlsSettings": {
           "serverName": "",
           "alpn": [
-            "http/2"
+            "h2"
           ],
           "allowInsecure": false,
           "allowInsecureCiphers": false,
           "disableSystemRoot": false,
-          "certificates": [
-            {
-              "usage": "encipherment",
-              "certificateFile": "",
-              "keyFile": ""
-            }
-          ]
+          "certificates": []
         },
-        "tcpSettings": {
-          "header": {
-            "type": "none"
-          }
+        "httpSettings": {
+          "host": [
+            "developer.microsoft.com",
+            "developer.apple.com"
+          ],
+          "path": "/"
         },
         "sockopt": {
           "tcpFastOpen": true

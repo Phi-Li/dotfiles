@@ -9,15 +9,24 @@
 # 2: Application error
 # 3: Network error
 
+# CLI arguments
+PROXY=''
+HELP=''
+FORCE=''
+CHECK=''
+REMOVE=''
+VERSION=''
+EXTRACT_ONLY=''
+LOCAL=''
+LOCAL_INSTALL=''
+ERROR_IF_UPTODATE=''
+
 CURRENT_VERSION=""
 NEW_VERSION=""
-ARCH=""
-V2RAY_DISTRIBUTION="64"
+V2RAY_DISTRIBUTION=""
 V2RAY_RUNNING=0
 V2RAY_SRC_ROOT="/tmp/v2ray"
 ZIPFILE="${V2RAY_SRC_ROOT}/v2ray-linux-${V2RAY_DISTRIBUTION}.zip"
-EXTRACT_ONLY=0
-ERROR_IF_UPTODATE=0
 DISTRIBUTION_SRC="jsdelivr"
 
 CMD_INSTALL=""
@@ -29,10 +38,6 @@ echo "SYSTEMCTL_CMD=${SYSTEMCTL_CMD}"
 SERVICE_CMD=$(command -v service 2>/dev/null)
 echo "SERVICE_CMD=${SERVICE_CMD}"
 
-CHECK=""
-FORCE=""
-HELP=""
-
 #######color code########
 RED="31m"      # Error message
 GREEN="32m"    # Success message
@@ -41,9 +46,8 @@ BLUE="36m"     # Info message
 
 
 #########################
-while [[ $# > 0 ]];do
-    key="$1"
-    case $key in
+while [[ $# > 0 ]]; do
+    case "$1" in
         -p|--proxy)
         PROXY="-x ${2}"
         shift # past argument
@@ -92,35 +96,50 @@ done
 
 ###############################
 colorEcho(){
-    COLOR=$1
-    echo -e "\033[${COLOR}${@:2}\033[0m"
+    echo -e "\033[${1}${@:2}\033[0m" 1>& 2
 }
 
-sysArch(){
-    ARCH=$(uname -m)
-    echo "ARCH=${ARCH}"
-    if [[ "$ARCH" == "i686" ]] || [[ "$ARCH" == "i386" ]]; then
-        V2RAY_DISTRIBUTION="32"
-    elif [[ "$ARCH" == *"armv7"* ]] || [[ "$ARCH" == "armv6l" ]]; then
-        V2RAY_DISTRIBUTION="arm"
-    elif [[ "$ARCH" == *"armv8"* ]] || [[ "$ARCH" == "aarch64" ]]; then
-        V2RAY_DISTRIBUTION="arm64"
-    elif [[ "$ARCH" == *"mips64le"* ]]; then
-        V2RAY_DISTRIBUTION="mips64le"
-    elif [[ "$ARCH" == *"mips64"* ]]; then
-        V2RAY_DISTRIBUTION="mips64"
-    elif [[ "$ARCH" == *"mipsle"* ]]; then
-        V2RAY_DISTRIBUTION="mipsle"
-    elif [[ "$ARCH" == *"mips"* ]]; then
-        V2RAY_DISTRIBUTION="mips"
-    elif [[ "$ARCH" == *"s390x"* ]]; then
-        V2RAY_DISTRIBUTION="s390x"
-    elif [[ "$ARCH" == "ppc64le" ]]; then
-        V2RAY_DISTRIBUTION="ppc64le"
-    elif [[ "$ARCH" == "ppc64" ]]; then
-        V2RAY_DISTRIBUTION="ppc64"
-    fi
-    return 0
+archAffix(){
+    case "${1:-"$(uname -m)"}" in
+        i686|i386)
+            echo '32'
+        ;;
+        x86_64|amd64)
+            echo '64'
+        ;;
+        *armv7*|armv6l)
+            echo 'arm'
+        ;;
+        *armv8*|aarch64)
+            echo 'arm64'
+        ;;
+        *mips64le*)
+            echo 'mips64le'
+        ;;
+        *mips64*)
+            echo 'mips64'
+        ;;
+        *mipsle*)
+            echo 'mipsle'
+        ;;
+        *mips*)
+            echo 'mips'
+        ;;
+        *s390x*)
+            echo 's390x'
+        ;;
+        ppc64le)
+            echo 'ppc64le'
+        ;;
+        ppc64)
+            echo 'ppc64'
+        ;;
+        *)
+            return 1
+        ;;
+    esac
+
+	return 0
 }
 
 downloadV2Ray(){
@@ -149,11 +168,11 @@ installSoftware(){
     getPMT
     if [[ $? -eq 1 ]]; then
         colorEcho ${RED} "The system package manager tool isn't APT or YUM, please install ${COMPONENT} manually."
-        return 1 
+        return 1
     fi
     if [[ $SOFTWARE_UPDATED -eq 0 ]]; then
         colorEcho ${BLUE} "Updating software repo"
-        $CMD_UPDATE      
+        $CMD_UPDATE
         SOFTWARE_UPDATED=1
     fi
 
@@ -197,27 +216,33 @@ extract(){
     return 0
 }
 
+normalizeVersion() {
+    if [ -n "$1" ]; then
+        case "$1" in
+            v*)
+                echo "$1"
+            ;;
+            *)
+                echo "v$1"
+            ;;
+        esac
+    else
+        echo ""
+    fi
+}
 
 # 1: new V2Ray. 0: no. 2: not installed. 3: check failed. 4: don't check.
 getVersion(){
     if [[ -n "$VERSION" ]]; then
-        NEW_VERSION="$VERSION"
-        if [[ ${NEW_VERSION} != v* ]]; then
-          NEW_VERSION=v${NEW_VERSION}
-        fi
+        NEW_VERSION="$(normalizeVersion "$VERSION")"
         return 4
     else
-        VER=`/usr/bin/v2ray/v2ray -version 2>/dev/null`
-        RETVAL="$?"
-        CURRENT_VERSION=`echo $VER | head -n 1 | cut -d " " -f2`
-        if [[ ${CURRENT_VERSION} != v* ]]; then
-            CURRENT_VERSION=v${CURRENT_VERSION}
-        fi
+        VER="$(/usr/bin/v2ray/v2ray -version 2>/dev/null)"
+        RETVAL=$?
+        CURRENT_VERSION="$(normalizeVersion "$(echo "$VER" | head -n 1 | cut -d " " -f2)")"
         TAG_URL="https://api.github.com/repos/v2ray/v2ray-core/releases/latest"
-        NEW_VERSION=`curl ${PROXY} -s ${TAG_URL} --connect-timeout 10| grep 'tag_name' | cut -d\" -f4`
-        if [[ ${NEW_VERSION} != v* ]]; then
-          NEW_VERSION=v${NEW_VERSION}
-        fi
+        NEW_VERSION="$(normalizeVersion "$(curl ${PROXY} -s "${TAG_URL}" --connect-timeout 10| grep 'tag_name' | cut -d\" -f4)")"
+
         if [[ $? -ne 0 ]] || [[ $NEW_VERSION == "" ]]; then
             colorEcho ${RED} "Failed to fetch release information. Please check your network or try again."
             return 3
@@ -245,9 +270,7 @@ stopV2ray(){
 }
 
 startV2ray(){
-    if [ -n "${SYSTEMCTL_CMD}" ] && [ -f "/lib/systemd/system/v2ray.service" ]; then
-        ${SYSTEMCTL_CMD} start v2ray
-    elif [ -n "${SYSTEMCTL_CMD}" ] && [ -f "/etc/systemd/system/v2ray.service" ]; then
+    if [ -n "${SYSTEMCTL_CMD}" ] && [[ -f "/lib/systemd/system/v2ray.service" || -f "/etc/systemd/system/v2ray.service" ]]; then
         ${SYSTEMCTL_CMD} start v2ray
     elif [ -n "${SERVICE_CMD}" ] && [ -f "/etc/init.d/v2ray" ]; then
         ${SERVICE_CMD} v2ray start
@@ -309,33 +332,28 @@ installV2Ray(){
 
 
 installInitScript(){
-    if [[ -n "${SYSTEMCTL_CMD}" ]];then
-        if [[ ! -f "/etc/systemd/system/v2ray.service" ]]; then
-            if [[ ! -f "/lib/systemd/system/v2ray.service" ]]; then
-                cp "${V2RAY_SRC_ROOT}/systemd/v2ray.service" "/etc/systemd/system/"
-                systemctl enable v2ray.service
-            fi
-        fi
-        return
+    if [[ -n "${SYSTEMCTL_CMD}" ]] && [[ ! -f "/etc/systemd/system/v2ray.service" && ! -f "/lib/systemd/system/v2ray.service" ]]; then
+        cp "${V2RAY_SRC_ROOT}/systemd/v2ray.service" "/etc/systemd/system/"
+        systemctl enable v2ray.service
     elif [[ -n "${SERVICE_CMD}" ]] && [[ ! -f "/etc/init.d/v2ray" ]]; then
         installSoftware "daemon" || return $?
         cp "${V2RAY_SRC_ROOT}/systemv/v2ray" "/etc/init.d/v2ray"
         chmod +x "/etc/init.d/v2ray"
         update-rc.d v2ray defaults
     fi
-    return
 }
 
 Help(){
-    echo "./install-release.sh [-h] [-c] [--remove] [-p proxy] [-f] [--version vx.y.z] [-l file]"
-    echo "  -h, --help            Show help"
-    echo "  -p, --proxy           To download through a proxy server, use -p socks5://127.0.0.1:1080 or -p http://127.0.0.1:3128 etc"
-    echo "  -f, --force           Force install"
-    echo "      --version         Install a particular version, use --version v3.15"
-    echo "  -l, --local           Install from a local file"
-    echo "      --remove          Remove installed V2Ray"
-    echo "  -c, --check           Check for update"
-    return 0
+  cat - 1>& 2 << EOF
+./install-release.sh [-h] [-c] [--remove] [-p proxy] [-f] [--version vx.y.z] [-l file]
+  -h, --help            Show help
+  -p, --proxy           To download through a proxy server, use -p socks5://127.0.0.1:1080 or -p http://127.0.0.1:3128 etc
+  -f, --force           Force install
+      --version         Install a particular version, use --version v3.15
+  -l, --local           Install from a local file
+      --remove          Remove installed V2Ray
+  -c, --check           Check for update
+EOF
 }
 
 remove(){
@@ -379,7 +397,7 @@ remove(){
             colorEcho ${GREEN} "Removed V2Ray successfully."
             colorEcho ${BLUE} "If necessary, please remove configuration file and log file manually."
             return 0
-        fi       
+        fi
     else
         colorEcho ${YELLOW} "V2Ray not found."
         return 0
@@ -407,8 +425,10 @@ main(){
     [[ "$HELP" == "1" ]] && Help && return
     [[ "$CHECK" == "1" ]] && checkUpdate && return
     [[ "$REMOVE" == "1" ]] && remove && return
-    
-    sysArch
+
+    local ARCH=$(uname -m)
+    V2RAY_DISTRIBUTION="$(archAffix)"
+
     # extract local file
     if [[ $LOCAL_INSTALL -eq 1 ]]; then
         colorEcho ${YELLOW} "Installing V2Ray via local file. Please make sure the file is a valid V2Ray package, as we are not able to determine that."
@@ -434,7 +454,7 @@ main(){
         RETVAL="$?"
         if [[ $RETVAL == 0 ]] && [[ "$FORCE" != "1" ]]; then
             colorEcho ${BLUE} "Latest version ${CURRENT_VERSION} is already installed."
-            if [[ "${ERROR_IF_UPTODATE}" == "1" ]]; then
+            if [ -n "${ERROR_IF_UPTODATE}" ]; then
               return 10
             fi
             return
@@ -446,9 +466,9 @@ main(){
             installSoftware unzip || return $?
             extract ${ZIPFILE} || return $?
         fi
-    fi 
-    
-    if [[ "${EXTRACT_ONLY}" == "1" ]]; then
+    fi
+
+    if [ -n "${EXTRACT_ONLY}" ]; then
         colorEcho ${GREEN} "V2Ray extracted to ${V2RAY_SRC_ROOT}, and exiting..."
         return 0
     fi

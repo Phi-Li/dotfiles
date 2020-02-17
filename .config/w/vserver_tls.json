@@ -19,12 +19,12 @@
         "disableInsecureEncryption": true
       },
       "streamSettings": {
-        "network": "tcp",
+        "network": "http",
         "security": "tls",
         "tlsSettings": {
           "serverName": "",
           "alpn": [
-            "http/2"
+            "h2"
           ],
           "allowInsecure": false,
           "allowInsecureCiphers": false,
@@ -37,10 +37,12 @@
             }
           ]
         },
-        "tcpSettings": {
-          "header": {
-            "type": "none"
-          }
+        "httpSettings": {
+          "host": [
+            "developer.microsoft.com",
+            "developer.apple.com"
+          ],
+          "path": "/"
         },
         "sockopt": {
           "tcpFastOpen": true
@@ -48,7 +50,8 @@
       }
     },
     {
-      "port": 10000,
+      "port": 1090,
+      "listen": "127.0.0.1",
       "protocol": "vmess",
       "settings": {
         "clients": [
@@ -61,16 +64,11 @@
         "disableInsecureEncryption": true
       },
       "streamSettings": {
-        "network": "kcp",
-        "kcpSettings": {
-          "tti": 20,
-          "uplinkCapacity": 20,
-          "downlinkCapacity": 100,
-          "congestion": true,
-          "readBufferSize": 8,
-          "writeBufferSize": 8,
-          "header": {
-            "type": "utp"
+        "network": "ws",
+        "wsSettings": {
+          "path": "/",
+          "headers": {
+            "Host": "v2ray.com"
           }
         }
       }
