@@ -1,0 +1,6 @@
+[Added Associations]
+application/pdf=firefox.desktop;okularApplication_pdf.desktop;
+
+[Default Applications]
+application/pdf=firefox.desktop;
+x-scheme-handler/tg=telegramdesktop.desktop;
