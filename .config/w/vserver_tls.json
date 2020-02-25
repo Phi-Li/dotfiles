@@ -19,7 +19,7 @@
         "disableInsecureEncryption": true
       },
       "streamSettings": {
-        "network": "http",
+        "network": "tcp",
         "security": "tls",
         "tlsSettings": {
           "serverName": "",
@@ -36,13 +36,6 @@
               "keyFile": "/path/to/key.key"
             }
           ]
-        },
-        "httpSettings": {
-          "host": [
-            "developer.microsoft.com",
-            "developer.apple.com"
-          ],
-          "path": "/"
         },
         "sockopt": {
           "tcpFastOpen": true

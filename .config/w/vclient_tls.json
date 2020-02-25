@@ -43,7 +43,7 @@
         ]
       },
       "streamSettings": {
-        "network": "http",
+        "network": "tcp",
         "security": "tls",
         "tlsSettings": {
           "serverName": "",
@@ -54,13 +54,6 @@
           "allowInsecureCiphers": false,
           "disableSystemRoot": false,
           "certificates": []
-        },
-        "httpSettings": {
-          "host": [
-            "developer.microsoft.com",
-            "developer.apple.com"
-          ],
-          "path": "/"
         },
         "sockopt": {
           "tcpFastOpen": true

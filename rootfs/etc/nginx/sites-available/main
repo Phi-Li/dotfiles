@@ -24,6 +24,7 @@ server {
 	}
 
 	location /drive/ {
+		# http://nginx.org/en/docs/http/ngx_http_proxy_module.html#example
 		proxy_set_header Host $host;
 		proxy_set_header X-Real-IP $remote_addr;
 
