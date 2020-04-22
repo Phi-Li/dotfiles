@@ -59,19 +59,11 @@
     }
   ],
   "routing": {
-    "domainStrategy": "IPOnDemand",
     "rules": [
       {
         "type": "field",
         "ip": [
           "geoip:private"
-        ],
-        "outboundTag": "blocked"
-      },
-      {
-        "type": "field",
-        "domain": [
-          "geosite:category-ads"
         ],
         "outboundTag": "blocked"
       }
