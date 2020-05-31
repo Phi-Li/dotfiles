@@ -42,7 +42,6 @@
         "tlsSettings": {
           "serverName": "v2ray.com",
           "alpn": [
-            "h2",
             "http/1.1"
           ],
           "allowInsecure": false,
