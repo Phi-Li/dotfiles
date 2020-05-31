@@ -48,7 +48,8 @@
         "tlsSettings": {
           "serverName": "",
           "alpn": [
-            "h2"
+            "h2",
+            "http/1.1"
           ],
           "allowInsecure": false,
           "allowInsecureCiphers": false,
@@ -85,6 +86,7 @@
   "policy": {
     "levels": {
       "0": {
+        // 在 HTTP 浏览的场景中，可以将 uplinkOnly 和 downlinkOnly 设为 0，以提高连接关闭的效率。
         "uplinkOnly": 0,
         "downlinkOnly": 0
       }
